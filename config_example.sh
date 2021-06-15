@@ -17,15 +17,19 @@ set -x
 #export OPENSHIFT_RELEASE_TYPE=nightly
 
 # Use <NAME>_LOCAL_IMAGE to build or use copy of container images locally e.g.
-#export IRONIC_INSPECTOR_LOCAL_IMAGE=https://github.com/metal3-io/ironic-inspector
+#export IRONIC_LOCAL_IMAGE=https://github.com/metal3-io/ironic
 #export IRONIC_LOCAL_IMAGE=quay.io/username/ironic
 #export MACHINE_CONFIG_OPERATOR_LOCAL_IMAGE=https://github.com/openshift/machine-config-operator
 # NOTE: If a checkout already exists in $HOME, it won't be re-created.
 # NOTE: You must set CUSTOM_REPO_FILE to build some OpenShift images, e.g. ironic ones.
+# NOTE: The use of IRONIC_INSPECTOR_LOCAL_IMAGE is limited to Openshift up to
+# Version 4.8, starting from Openshift 4.9 the ironic-inspector container is not used anymore.
 
 # Use <IMAGE_NAME>_EXTRA_PACKAGES to set the path (relative to dev-scripts or
 # absolute) to a file with extra packages to install in the image, one per line.
-# At the moment, this option is supported with ironic-image and ironic-inspector-image
+# At the moment, this option is supported with ironic-image and
+# ironic-inspector-image (NOTE: the ironic-inspector container has been
+# removed in Openshift 4.9)
 # For example:
 # export IRONIC_EXTRA_PACKAGES=ironic-extra-pkgs.txt
 
