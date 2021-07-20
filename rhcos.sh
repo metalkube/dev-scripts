@@ -52,3 +52,30 @@ else
   export MACHINE_OS_INSTALLER_BOOTSTRAP_IMAGE_UNCOMPRESSED_SHA256=$(jq -r '.images.qemu["uncompressed-sha256"]' $OCP_DIR/rhcos.json)
   export MACHINE_OS_BOOTSTRAP_IMAGE_UNCOMPRESSED_SHA256=${MACHINE_OS_BOOTSTRAP_IMAGE_UNCOMPRESSED_SHA256:-${MACHINE_OS_INSTALLER_BOOTSTRAP_IMAGE_UNCOMPRESSED_SHA256}}
 fi
+
+if [ "${RHCOS_LIVE_IMAGES}"  == "true" ]; then
+	export LIVE_ISO_IMAGE_URL=$(jq -r '.architectures.x86_64.artifacts.metal.formats["iso"].disk.location' $OCP_DIR/rhcos.json)
+	export LIVE_KERNEL_IMAGE_URL=$(jq -r '.architectures.x86_64.artifacts.metal.formats["pxe"].kernel.location' $OCP_DIR/rhcos.json)
+	export LIVE_ROOTFS_IMAGE_URL=$(jq -r '.architectures.x86_64.artifacts.metal.formats["pxe"].rootfs.location' $OCP_DIR/rhcos.json)
+	export LIVE_INITRAMFS_IMAGE_URL=$(jq -r '.architectures.x86_64.artifacts.metal.formats["pxe"].initramfs.location' $OCP_DIR/rhcos.json)
+
+	MACHINE_OS_INSTALLER_LIVE_URLS=""
+	for URL in $LIVE_ISO_IMAGE_URL \
+		   $LIVE_KERNEL_IMAGE_URL \
+		   $LIVE_ROOTFS_IMAGE_URL \
+		   $LIVE_INITRAMFS_IMAGE_URL; do
+		MACHINE_OS_INSTALLER_LIVE_URLS+="${URL},"
+	done
+	# Trim tailing ','
+	MACHINE_OS_INSTALLER_LIVE_URLS=$(echo $MACHINE_OS_INSTALLER_LIVE_URLS | sed 's/,*$//')
+
+	export MACHINE_OS_IMAGE_URL=${LIVE_ISO_IMAGE_URL}
+	export MACHINE_OS_IMAGE_NAME=$(basename ${MACHINE_OS_IMAGE_URL})
+	export MACHINE_OS_IMAGE_SHA256=$(jq -r '.architectures.x86_64.artifacts.metal.formats["iso"].disk.sha256' $OCP_DIR/rhcos.json)
+	export MACHINE_OS_LIVE_KERNEL=$(basename ${LIVE_KERNEL_IMAGE_URL})
+	export MACHINE_OS_LIVE_KERNEL_SHA256=$(jq -r '.architectures.x86_64.artifacts.metal.formats["pxe"].kernel.sha256' $OCP_DIR/rhcos.json)
+	export MACHINE_OS_LIVE_ROOTFS=$(basename ${LIVE_ROOTFS_IMAGE_URL})
+	export MACHINE_OS_LIVE_ROOTFS_SHA256=$(jq -r '.architectures.x86_64.artifacts.metal.formats["pxe"].rootfs.sha256' $OCP_DIR/rhcos.json)
+	export MACHINE_OS_LIVE_INITRAMFS=$(basename ${LIVE_INITRAMFS_IMAGE_URL})
+	export MACHINE_OS_LIVE_INITRAMFS_SHA256=$(jq -r '.architectures.x86_64.artifacts.metal.formats["pxe"].initramfs.sha256' $OCP_DIR/rhcos.json)
+fi

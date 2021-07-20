@@ -181,6 +181,21 @@ EOF
   fi
 }
 
+function os_images() {
+	# If using the live images, fetch the kernel, rootfs and initramfs images also
+	if [ "${RHCOS_LIVE_IMAGES}"  == "true" ]; then
+cat <<EOF
+    bootstrapOSImage: http://$(wrap_if_ipv6 $MIRROR_IP)/images/${MACHINE_OS_BOOTSTRAP_IMAGE_NAME}?sha256=${MACHINE_OS_BOOTSTRAP_IMAGE_UNCOMPRESSED_SHA256}
+    clusterOSImage: http://$(wrap_if_ipv6 $MIRROR_IP)/images/${MACHINE_OS_IMAGE_NAME}?sha256=${MACHINE_OS_IMAGE_SHA256},http://$(wrap_if_ipv6 $MIRROR_IP)/images/${MACHINE_OS_LIVE_KERNEL}?sha256=${MACHINE_OS_LIVE_KERNEL_SHA256},http://$(wrap_if_ipv6 $MIRROR_IP)/images/${MACHINE_OS_LIVE_ROOTFS}?sha256=${MACHINE_OS_LIVE_ROOTFS_SHA256},http://$(wrap_if_ipv6 $MIRROR_IP)/images/${MACHINE_OS_LIVE_INITRAMFS}?sha256=${MACHINE_OS_LIVE_INITRAMFS_SHA256}
+EOF
+	else
+cat <<EOF
+    bootstrapOSImage: http://$(wrap_if_ipv6 $MIRROR_IP)/images/${MACHINE_OS_BOOTSTRAP_IMAGE_NAME}?sha256=${MACHINE_OS_BOOTSTRAP_IMAGE_UNCOMPRESSED_SHA256}
+    clusterOSImage: http://$(wrap_if_ipv6 $MIRROR_IP)/images/${MACHINE_OS_IMAGE_NAME}?sha256=${MACHINE_OS_IMAGE_SHA256}
+EOF
+	fi
+}
+
 function generate_ocp_install_config() {
     local outdir
 
@@ -225,8 +240,7 @@ platform:
 $(libvirturi)
 $(baremetal_network_configuration)
     externalBridge: ${BAREMETAL_NETWORK_NAME}
-    bootstrapOSImage: http://$(wrap_if_ipv6 $MIRROR_IP)/images/${MACHINE_OS_BOOTSTRAP_IMAGE_NAME}?sha256=${MACHINE_OS_BOOTSTRAP_IMAGE_UNCOMPRESSED_SHA256}
-    clusterOSImage: http://$(wrap_if_ipv6 $MIRROR_IP)/images/${MACHINE_OS_IMAGE_NAME}?sha256=${MACHINE_OS_IMAGE_SHA256}
+$(os_images)
     apiVIP: ${API_VIP}
     ingressVIP: ${INGRESS_VIP}
 $(dnsvip)

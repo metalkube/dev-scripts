@@ -159,6 +159,29 @@ if [ ! -f "${CACHED_MACHINE_OS_IMAGE}" ]; then
   pushd $(dirname ${CACHED_MACHINE_OS_IMAGE})
   sha256sum --strict --check ${CACHED_MACHINE_OS_IMAGE}.sha256sum || ( rm -f "${CACHED_MACHINE_OS_IMAGE}" ; exit 1 )
   popd
+  # If using the live images, fetch the kernel, rootfs and initramfs images also
+  if [ "${RHCOS_LIVE_IMAGES}"  == "true" ]; then
+     CACHED_MACHINE_OS_LIVE_KERNEL="${IRONIC_DATA_DIR}/html/images/${MACHINE_OS_LIVE_KERNEL}"
+     curl -g --insecure -L -o "${CACHED_MACHINE_OS_LIVE_KERNEL}" "${LIVE_KERNEL_IMAGE_URL}"
+     echo "${MACHINE_OS_LIVE_KERNEL_SHA256} $(basename ${CACHED_MACHINE_OS_LIVE_KERNEL})" | tee ${CACHED_MACHINE_OS_LIVE_KERNEL}.sha256sum
+     pushd $(dirname ${CACHED_MACHINE_OS_LIVE_KERNEL})
+     sha256sum --strict --check ${CACHED_MACHINE_OS_LIVE_KERNEL}.sha256sum || ( rm -f "${CACHED_MACHINE_OS_LIVE_KERNEL}" ; exit 1 )
+     popd
+     #
+     CACHED_MACHINE_OS_LIVE_ROOTFS="${IRONIC_DATA_DIR}/html/images/${MACHINE_OS_LIVE_ROOTFS}"
+     curl -g --insecure -L -o "${CACHED_MACHINE_OS_LIVE_ROOTFS}" "${LIVE_ROOTFS_IMAGE_URL}"
+     echo "${MACHINE_OS_LIVE_ROOTFS_SHA256} $(basename ${CACHED_MACHINE_OS_LIVE_ROOTFS})" | tee ${CACHED_MACHINE_OS_LIVE_ROOTFS}.sha256sum
+     pushd $(dirname ${CACHED_MACHINE_OS_LIVE_ROOTFS})
+     sha256sum --strict --check ${CACHED_MACHINE_OS_LIVE_ROOTFS}.sha256sum || ( rm -f "${CACHED_MACHINE_OS_LIVE_ROOTFS}" ; exit 1 )
+     popd
+     #
+     CACHED_MACHINE_OS_LIVE_INITRAMFS="${IRONIC_DATA_DIR}/html/images/${MACHINE_OS_LIVE_INITRAMFS}"
+     curl -g --insecure -L -o "${CACHED_MACHINE_OS_LIVE_INITRAMFS}" "${LIVE_INITRAMFS_IMAGE_URL}"
+     echo "${MACHINE_OS_LIVE_INITRAMFS_SHA256} $(basename ${CACHED_MACHINE_OS_LIVE_INITRAMFS})" | tee ${CACHED_MACHINE_OS_LIVE_INITRAMFS}.sha256sum
+     pushd $(dirname ${CACHED_MACHINE_OS_LIVE_INITRAMFS})
+     sha256sum --strict --check ${CACHED_MACHINE_OS_LIVE_INITRAMFS}.sha256sum || ( rm -f "${CACHED_MACHINE_OS_LIVE_INITRAMFS}" ; exit 1 )
+     popd
+  fi
 fi
 
 CACHED_MACHINE_OS_BOOTSTRAP_IMAGE="${IRONIC_DATA_DIR}/html/images/${MACHINE_OS_BOOTSTRAP_IMAGE_NAME}"
