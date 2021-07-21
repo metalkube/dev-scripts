@@ -104,7 +104,8 @@ if [ -d "/home/notstack/ironic-image" ] ; then
     export IRONIC_LOCAL_IMAGE=https://github.com/metal3-io/ironic-image
     export UPSTREAM_IRONIC=true
 fi
-if [ -d "/home/notstack/ironic-inspector-image" ] ; then
+# Starting from Openshift 4.9 the ironic-inspector container is not used anymore
+if [ "$OPENSHIFT_VERSION" <= "4.8" ] && [ -d "/home/notstack/ironic-inspector-image" ] ; then
     export IRONIC_INSPECTOR_LOCAL_IMAGE=https://github.com/metal3-io/ironic-inspector-image
     export UPSTREAM_IRONIC=true
 fi

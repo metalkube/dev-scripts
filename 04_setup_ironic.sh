@@ -17,10 +17,12 @@ PODMAN_VERSION=$(sudo podman version -f json | jq -r '.Version,.Client.Version|s
 
 # To replace an image entry in the openshift releae image, set
 # <ENTRYNAME>_LOCAL_IMAGE - where ENTRYNAME matches an uppercase version of the name in the release image
-# with "-" converted to "_" e.g. to use a custom ironic-inspector
-#export IRONIC_INSPECTOR_LOCAL_IMAGE=https://github.com/metal3-io/ironic-inspector-image
+# with "-" converted to "_" e.g. to use a custom ironic image
+#export IRONIC_LOCAL_IMAGE=https://github.com/metal3-io/ironic-image
 #export IRONIC_MACHINE_OS_DOWNLOADER_LOCAL_IMAGE=https://github.com/openshift-metal3/ironic-rhcos-downloader
 #export BAREMETAL_OPERATOR_LOCAL_IMAGE=192.168.111.1:5000/localimages/bmo:latest
+# The use of IRONIC_INSPECTOR_LOCAL_IMAGE is limited to Openshift up to Version 4.8,
+# starting from Openshift 4.9 the ironic-inspector container is not used anymore
 rm -f assets/templates/99_local-registry.yaml $OPENSHIFT_INSTALL_PATH/data/data/bootstrap/baremetal/files/etc/containers/registries.conf
 
 write_pull_secret
